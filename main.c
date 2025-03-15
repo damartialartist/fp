@@ -124,7 +124,7 @@ void ADC_Ch14Ch15_Init(void);
 
 //////////////////////// MAIN FUNCTION /////////////////////////////////////
 float neg_threshold = 0;
-float threshold = 0.0025;
+float threshold = 0.005;
 int main(void)
     {
     Size=1000;
@@ -265,12 +265,12 @@ void TA2_0_IRQHandler(void)
             bool isAboveSignalThreshold = (avgmax1 > signalThreshold) || (avgmax2 > signalThreshold);
             howLeftMoreRight = avgmax1 - avgmax2;
             howRightMoreLeft = -howLeftMoreRight;
-            howForwardMoreBackward = (avgmax1 + avgmax2) / (avgmax1_old + avgmax2_old);
+            howForwardMoreBackward = (avgmax1 + avgmax2) - (avgmax1_old + avgmax2_old);
             //OUR CODE
             if (justStarted) {
                 DIRECTION = STOP;
                 diff = howLeftMoreRight;
-                signalThreshold = (avgmax1 + avgmax2) / 1.9;
+                signalThreshold = (avgmax1 + avgmax2) / 1.8;
                 justStarted = false;
             }
             else if (!isAboveSignalThreshold) {
@@ -287,7 +287,7 @@ void TA2_0_IRQHandler(void)
                 avgmax1_old = avgmax1;
                 avgmax2_old = avgmax2;
             }
-            else if (howForwardMoreBackward >= 0.96){
+            else if (((avgmax1 - avgmax1_old) > 0) || ((avgmax2 - avgmax2_old) > 0)){
                     DIRECTION = FORWARD;
                     avgmax1_old = avgmax1;
                     avgmax2_old = avgmax2;
